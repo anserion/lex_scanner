@@ -1,0 +1,8 @@
+
+CONST N=7, M=85;
+
+VAR X,Y,Z;
+BEGIN
+  IF X>=Y+3 THEN X := M;
+  Y:=Z+56;
+END.
