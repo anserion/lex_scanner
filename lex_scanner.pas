@@ -79,14 +79,14 @@ begin {getsym}
   id.kind:=nul;
   
   {если ch - буква, или знак подчеркивния, то это - начало имени}
-  if ch in ['A'..'Z','_'] then
+  if ch in ['A'..'Z','a'..'z','_'] then
   begin
     id.kind:=ident;
     {читаем посимвольно имя id[], состоящее из букв A-Z, цифр, подчеркивания}
     repeat
       id.s_name:=id.s_name+ch;
       getch;
-    until not(ch in ['A'..'Z','0'..'9','_']);
+    until not(ch in ['A'..'Z','a'..'z','0'..'9','_']);
   end
     else
   if ch in ['0'..'9'] then {если ch - цифра, то это - начало числа}
