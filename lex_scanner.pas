@@ -25,8 +25,11 @@ var ch,ch2: char; {последний прочитанный входной си
 {запись нового объекта (идентификатора), в таблицу}
 procedure enter(new_id:t_sym);
 begin
-    tx:=tx+1;
-    id_table[tx]:=new_id;
+    if tx<txmax then
+    begin
+        tx:=tx+1;
+        id_table[tx]:=new_id;
+    end;
 end {enter};
 
 {поиск имени id в таблице объектов-идентификаторов}
