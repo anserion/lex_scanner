@@ -18,12 +18,11 @@ end;
      
 var ch,ch2: char; {последний прочитанный входной символ и следующий за ним}
     start_of_file, end_of_file:boolean;
-    id: t_sym; {последний прочитанный идентификатор}
     id_table: array [0..txmax] of t_sym; {сводная таблица идентификаторов}
     tx: integer; {число идентификаторов в таблице}
 
 {запись нового объекта (идентификатора), в таблицу}
-procedure enter(new_id:t_sym);
+procedure add_id_to_table(new_id:t_sym);
 begin
     if tx<txmax then
     begin
@@ -70,7 +69,8 @@ begin
 end {getch};
   
 {найти во входном потоке терминальный символ}
-procedure getsym;
+function getsym:t_sym;
+var id: t_sym;
 begin {getsym}
   {пропускаем возможные пробелы и концы строк}
   while (ch=' ')or(ch=chr(10))or(ch=chr(13)) do getch;
@@ -155,14 +155,17 @@ begin {getsym}
 
     getch;
   end;
+  getsym:=id;
 end {getsym};
 
+var id:t_sym;
 begin {основная программа}
 start_of_file:=true; end_of_file:=false; tx:=0; 
 
 getch;
 repeat
-    getsym; 
+    id:=getsym;
+    add_id_to_table(id);
     writeln('symbol=',id.s_name,', kind=',id.kind);
 until id.s_name='period';
 
