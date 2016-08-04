@@ -3,8 +3,6 @@
 program lex_scanner(input, oufput);
 
 const txmax = 100; {длина таблицы имен}
-      nmax = 14;   {максимальное количество цифр в числах}
-      al = 255;     {максимальная длина имен}
 
 type
 t_object = (nul,num,ident,oper);
@@ -158,7 +156,7 @@ begin {getsym}
   getsym:=id;
 end {getsym};
 
-var id:t_sym;
+var id:t_sym; i:integer;
 begin {основная программа}
 start_of_file:=true; end_of_file:=false; tx:=0; 
 
@@ -166,7 +164,8 @@ getch;
 repeat
     id:=getsym;
     add_id_to_table(id);
-    writeln('symbol=',id.s_name,', kind=',id.kind);
 until id.s_name='period';
 
+for i:=1 to tx do
+  writeln(i,': symbol=',id_table[i].s_name,', kind=',id_table[i].kind);
 end.
