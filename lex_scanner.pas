@@ -94,6 +94,15 @@ begin {getsym}
       id.s_name:=id.s_name+ch;
       getch;
     until not(ch in ['0'..'9']);
+    if (ch='.')and(ch2 in ['0'..'9']) then
+    begin
+      id.s_name:=id.s_name+ch;
+      getch;
+      repeat
+        id.s_name:=id.s_name+ch;
+        getch;
+      until not(ch in ['0'..'9']);      
+    end;
   end
     else
   begin {односимвольный и некоторые двусимвольные идентификаторы}

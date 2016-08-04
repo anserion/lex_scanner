@@ -1,5 +1,5 @@
 
-CONST N=7, M=85;
+CONST N=7, M=85, Floating_point_VAR=-3.141592;
 
 VAR X,Y,Z;
 BEGIN
