@@ -18,13 +18,9 @@
 {односимвольных и двухсимвольных операций во входном потоке}
 program lex_scanner(input, oufput);
 
-const txmax = 100; {длина таблицы имен}
-
 type
-t_object = (nul,num,ident,oper);
-
 t_sym=record 
-    kind:t_object; {тип идентификатора}
+    kind: (nul,oper,num,ident); {тип идентификатора}
     tag:integer;   {вспомогательный элемент число-метка (зарезервировано)}
     i_name:integer;  {числовое имя-код идентификатора для быстрой обработки}
     s_name:string;   {строковое имя идентификатора}
@@ -44,37 +40,6 @@ const digits=['0'..'9'];
 
 var ch,ch2: char; {последний прочитанный входной символ и следующий за ним}
     start_of_file, end_of_file:boolean;
-    id_table: array [0..txmax] of t_sym; {сводная таблица идентификаторов}
-    tx: integer; {число идентификаторов в таблице}
-
-{запись нового объекта (идентификатора), в таблицу}
-procedure add_id_to_table(new_id:t_sym);
-begin
-    if tx<txmax then
-    begin
-        tx:=tx+1;
-        id_table[tx]:=new_id;
-    end;
-end {enter};
-
-{поиск имени id в таблице объектов-идентификаторов}
-function find_by_sname(id:string): integer;
-var i,res: integer;
-begin
-  res:=0;
-  for i:=1 to tx do
-    if id_table[i].s_name=id then res:=i;
-  find_by_sname:=res;
-end {find_by_sname};
-
-function find_by_iname(id:integer): integer;
-var i,res: integer;
-begin
-  res:=0;
-  for i:=1 to tx do
-    if id_table[i].i_name=id then res:=i;
-  find_by_iname:=res;
-end {find_by_iname};
 
 {прочитать из потока ввода два символа и поместить их в ch, ch2}
 procedure getch;
@@ -158,6 +123,11 @@ begin {getsym}
     if (ch='|')and(ch2='|') then begin id.s_name:='||'; getch; end;
     if (ch='&')and(ch2='&') then begin id.s_name:='&&'; getch; end;
     if (ch='^')and(ch2='^') then begin id.s_name:='^^'; getch; end;
+    {смайлики :) }
+    if (ch=':')and(ch2=')') then begin id.s_name:=':)'; getch; end;
+    if (ch=':')and(ch2='(') then begin id.s_name:=':('; getch; end;
+    if (ch=':')and(ch2=']') then begin id.s_name:=':]'; getch; end;
+    if (ch=':')and(ch2='[') then begin id.s_name:=':['; getch; end;
 
     getch;
   end
@@ -170,16 +140,14 @@ begin {getsym}
   getsym:=id;
 end {getsym};
 
-var id:t_sym; i:integer;
+var id:t_sym;
 begin {основная программа}
-start_of_file:=true; end_of_file:=false; tx:=0; 
+start_of_file:=true; end_of_file:=false;
 
 getch;
 repeat
     id:=getsym;
-    add_id_to_table(id);
+    writeln('kind=',id.kind,' name=',id.s_name);
 until id.s_name='.';
 
-for i:=1 to tx do
-  writeln(i,': symbol=',id_table[i].s_name,', kind=',id_table[i].kind);
 end.
