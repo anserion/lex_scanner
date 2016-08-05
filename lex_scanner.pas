@@ -1,3 +1,19 @@
+//Copyright 2016 Andrey S. Ionisyan (anserion@gmail.com)
+//
+//Licensed under the Apache License, Version 2.0 (the "License");
+//you may not use this file except in compliance with the License.
+//You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//Unless required by applicable law or agreed to in writing, software
+//distributed under the License is distributed on an "AS IS" BASIS,
+//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//See the License for the specific language governing permissions and
+//limitations under the License.
+
+// last version: https://github.com/anserion/lex_scanner.git
+
 {Поиск многосимвольных идентификаторов, чисел,             }
 {односимвольных и двухсимвольных операций во входном потоке}
 program lex_scanner(input, oufput);
@@ -13,7 +29,7 @@ t_sym=record
     i_name:integer;  {числовое имя-код идентификатора для быстрой обработки}
     s_name:string;   {строковое имя идентификатора}
 end;
-     
+
 var ch,ch2: char; {последний прочитанный входной символ и следующий за ним}
     start_of_file, end_of_file:boolean;
     id_table: array [0..txmax] of t_sym; {сводная таблица идентификаторов}
@@ -65,17 +81,17 @@ begin
      if not(eof(input)) then read(ch2) else ch2:=' ';
   end;
 end {getch};
-  
+
 {найти во входном потоке терминальный символ}
 function getsym:t_sym;
 var id: t_sym;
 begin {getsym}
   {пропускаем возможные пробелы и концы строк}
   while (ch=' ')or(ch=chr(10))or(ch=chr(13)) do getch;
-  
+
   id.s_name:='';
   id.kind:=nul;
-  
+
   {если ch - буква, или знак подчеркивния, то это - начало имени}
   if ch in ['A'..'Z','a'..'z','_'] then
   begin
@@ -101,7 +117,7 @@ begin {getsym}
       repeat
         id.s_name:=id.s_name+ch;
         getch;
-      until not(ch in ['0'..'9']);      
+      until not(ch in ['0'..'9']);
     end;
   end
     else
