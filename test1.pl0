@@ -1,6 +1,6 @@
 
 CONST N=7, M=85, Floating_point_VAR=-3.141592;
-
+{комментарий}
 VAR X,Y,Z;
 BEGIN
   IF X>=Y+3 THEN X := M;

@@ -30,6 +30,18 @@ t_sym=record
     s_name:string;   {строковое имя идентификатора}
 end;
 
+const digits=['0'..'9'];
+      eng_letters=['A'..'Z','a'..'z'];
+      spec_letters=[',',';','!','%','?','#','$','@','&','^',
+                    '/','\','|','=','<','>','(',')','{','}',
+                    '[',']','+','-','*','.','''','"','`',':','~'];
+//      rus_letters=['А','Б','В','Г','Д','Е','Ё','Ж','З','И','Й'];,
+//                   'К','Л','М','Н','О','П','Р','С','Т','У','Ф',
+//                   'Х','Ц','Ч','Ш','Щ','Ы','Ь','Ъ','Э','Ю','Я',
+//                   'а','б','в','г','д','е','ё','ж','з','и','й',
+//                   'к','л','м','н','о','п','р','с','т','у','ф',
+//                   'х','ц','ч','ш','щ','ы','ь','ъ','э','ю','я'];
+
 var ch,ch2: char; {последний прочитанный входной символ и следующий за ним}
     start_of_file, end_of_file:boolean;
     id_table: array [0..txmax] of t_sym; {сводная таблица идентификаторов}
@@ -92,90 +104,67 @@ begin {getsym}
   id.s_name:='';
   id.kind:=nul;
 
-  {если ch - буква, или знак подчеркивния, то это - начало имени}
-  if ch in ['A'..'Z','a'..'z','_'] then
+  {если ch - буква или знак подчеркивния, то это - начало имени}
+  if ch in ['_']+eng_letters then
   begin
     id.kind:=ident;
     {читаем посимвольно имя id[], состоящее из букв A-Z, цифр, подчеркивания}
     repeat
       id.s_name:=id.s_name+ch;
       getch;
-    until not(ch in ['A'..'Z','a'..'z','0'..'9','_']);
+    until not(ch in ['_']+eng_letters+digits);
   end
     else
-  if ch in ['0'..'9'] then {если ch - цифра, то это - начало числа}
+  if ch in digits then {если ch - цифра, то это - начало числа}
   begin
     id.kind:=num;
     repeat
       id.s_name:=id.s_name+ch;
       getch;
-    until not(ch in ['0'..'9']);
-    if (ch='.')and(ch2 in ['0'..'9']) then
+    until not(ch in digits);
+    if (ch='.')and(ch2 in digits) then
     begin
       id.s_name:=id.s_name+ch;
       getch;
       repeat
         id.s_name:=id.s_name+ch;
         getch;
-      until not(ch in ['0'..'9']);
+      until not(ch in digits);
     end;
   end
     else
+  if ch in spec_letters then
   begin {односимвольный и некоторые двусимвольные идентификаторы}
     id.kind:=oper;
-    if ch=',' then id.s_name:='comma';
-    if ch=';' then id.s_name:='semicolon';
-    if ch='!' then id.s_name:='exclamation';
-    if ch='%' then id.s_name:='percent';
-    if ch='?' then id.s_name:='question';
-    if ch='#' then id.s_name:='grid';
-    if ch='$' then id.s_name:='dollar';
-    if ch='@' then id.s_name:='at_symbol';
-    if ch='&' then id.s_name:='and_symbol';
-    if ch='^' then id.s_name:='xor_symbol';
-    if ch='/' then id.s_name:='slash';
-    if ch='\' then id.s_name:='reverse_slash';
-    if ch='|' then id.s_name:='or_symbol';
-    if ch='=' then id.s_name:='equal';
-    if ch='<' then id.s_name:='less';
-    if ch='>' then id.s_name:='greater';
-    if ch='(' then id.s_name:='left_paren';
-    if ch=')' then id.s_name:='right_paren';
-    if ch='{' then id.s_name:='figure_left_paren';
-    if ch='}' then id.s_name:='figure_right_paren';
-    if ch='[' then id.s_name:='square_left_paren';
-    if ch=']' then id.s_name:='square_right_paren';
-    if ch='+' then id.s_name:='plus';
-    if ch='-' then id.s_name:='minus';
-    if ch='*' then id.s_name:='times';
-    if ch='.' then id.s_name:='period';
-    if ch='''' then id.s_name:='quote';
-    if ch='"' then id.s_name:='double_quote';
-    if ch='`' then id.s_name:='alt_quote';
-    if ch=':' then id.s_name:='colon';
-    if ch='~' then id.s_name:='tilda';
-    
+    {односимвольные спецсимволы}
+    id.s_name:=ch;
     {разбор случаев двусимвольных спецкомбинаций}
-    if (ch='-')and(ch2='>') then begin id.s_name:='arrow_to'; getch; end;
-    if (ch='<')and(ch2='-') then begin id.s_name:='arrow_from'; getch; end;
-    if (ch='<')and(ch2='>') then begin id.s_name:='not_equal'; getch; end;
-    if (ch='!')and(ch2='=') then begin id.s_name:='not_equal'; getch; end;
-    if (ch='=')and(ch2='=') then begin id.s_name:='double_equal'; getch; end;
-    if (ch=':')and(ch2='=') then begin id.s_name:='becomes'; getch; end;
-    if (ch='<')and(ch2='=') then begin id.s_name:='less_equal'; getch; end;
-    if (ch='>')and(ch2='=') then begin id.s_name:='greater_equal'; getch; end;
-    if (ch='(')and(ch2='*') then begin id.s_name:='left_paren_star'; getch; end;
-    if (ch='*')and(ch2=')') then begin id.s_name:='right_paren_star'; getch; end;
-    if (ch='+')and(ch2='+') then begin id.s_name:='double_plus'; getch; end;
-    if (ch='-')and(ch2='-') then begin id.s_name:='double_minus'; getch; end;
-    if (ch='*')and(ch2='*') then begin id.s_name:='double_times'; getch; end;
-    if (ch='.')and(ch2='.') then begin id.s_name:='double_period'; getch; end;
-    if (ch=':')and(ch2=':') then begin id.s_name:='double_colon'; getch; end;
-    if (ch='/')and(ch2='/') then begin id.s_name:='double_slash'; getch; end;
-    if (ch='|')and(ch2='|') then begin id.s_name:='double_or'; getch; end;
-    if (ch='&')and(ch2='&') then begin id.s_name:='double_and'; getch; end;
-    if (ch='^')and(ch2='^') then begin id.s_name:='double_xor'; getch; end;
+    if (ch='-')and(ch2='>') then begin id.s_name:='->'; getch; end;
+    if (ch='<')and(ch2='-') then begin id.s_name:='<-'; getch; end;
+    if (ch='<')and(ch2='>') then begin id.s_name:='<>'; getch; end;
+    if (ch='!')and(ch2='=') then begin id.s_name:='!='; getch; end;
+    if (ch='=')and(ch2='=') then begin id.s_name:='=='; getch; end;
+    if (ch=':')and(ch2='=') then begin id.s_name:=':='; getch; end;
+    if (ch='<')and(ch2='=') then begin id.s_name:='<='; getch; end;
+    if (ch='>')and(ch2='=') then begin id.s_name:='>='; getch; end;
+    if (ch='(')and(ch2='*') then begin id.s_name:='(*'; getch; end;
+    if (ch='*')and(ch2=')') then begin id.s_name:='*)'; getch; end;
+    if (ch='+')and(ch2='+') then begin id.s_name:='++'; getch; end;
+    if (ch='-')and(ch2='-') then begin id.s_name:='--'; getch; end;
+    if (ch='*')and(ch2='*') then begin id.s_name:='**'; getch; end;
+    if (ch='.')and(ch2='.') then begin id.s_name:='..'; getch; end;
+    if (ch=':')and(ch2=':') then begin id.s_name:='::'; getch; end;
+    if (ch='/')and(ch2='/') then begin id.s_name:='//'; getch; end;
+    if (ch='|')and(ch2='|') then begin id.s_name:='||'; getch; end;
+    if (ch='&')and(ch2='&') then begin id.s_name:='&&'; getch; end;
+    if (ch='^')and(ch2='^') then begin id.s_name:='^^'; getch; end;
 
+    getch;
+  end
+    else
+  begin
+    id.s_name:=ch;
+    id.kind:=nul;
     getch;
   end;
   getsym:=id;
@@ -189,7 +178,7 @@ getch;
 repeat
     id:=getsym;
     add_id_to_table(id);
-until id.s_name='period';
+until id.s_name='.';
 
 for i:=1 to tx do
   writeln(i,': symbol=',id_table[i].s_name,', kind=',id_table[i].kind);
