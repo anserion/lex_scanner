@@ -16,7 +16,7 @@
 
 {Поиск многосимвольных идентификаторов, чисел,             }
 {односимвольных и двухсимвольных операций во входном потоке}
-program lex_scanner(input, oufput);
+program rbnf_parser(input, oufput);
 
 type
 t_sym=record 
@@ -30,7 +30,7 @@ const digits=['0'..'9'];
       eng_letters=['A'..'Z','a'..'z'];
       spec_letters=[',',';','!','%','?','#','$','@','&','^',
                     '/','\','|','=','<','>','(',')','{','}',
-                    '[',']','+','-','*','.','''','"','`',':','~'];
+		    '[',']','+','-','*','.','''','"','`',':','~'];
 //локализация не работает на 2 байта/символ UTF8
 //      rus_letters=['А','Б','В','Г','Д','Е','Ё','Ж','З','И','Й'];,
 //                   'К','Л','М','Н','О','П','Р','С','Т','У','Ф',
@@ -79,7 +79,9 @@ begin {getsym}
     repeat
       id.s_name:=id.s_name+ch;
       getch;
-    until not(ch in ['_']+eng_letters+digits{+rus_letters});
+    until not(ch in ['_']+eng_letters+digits{+rus_letters}) or end_of_file;
+    if (ch in ['_']+eng_letters+digits{+rus_letters}) and end_of_file then
+       id.s_name:=id.s_name+ch;
   end
     else
   if ch in digits then {если ch - цифра, то это - начало числа}
@@ -88,7 +90,8 @@ begin {getsym}
     repeat
       id.s_name:=id.s_name+ch;
       getch;
-    until not(ch in digits);
+    until not(ch in digits) or end_of_file;
+    if (ch in digits) and end_of_file then id.s_name:=id.s_name+ch;
     if (ch='.')and(ch2 in digits) then
     begin
       id.s_name:=id.s_name+ch;
@@ -96,7 +99,8 @@ begin {getsym}
       repeat
         id.s_name:=id.s_name+ch;
         getch;
-      until not(ch in digits);
+      until not(ch in digits) or end_of_file;
+      if (ch in digits) and end_of_file then id.s_name:=id.s_name+ch
     end;
   end
     else
@@ -131,13 +135,13 @@ begin {getsym}
     if (ch=':')and(ch2=']') then begin id.s_name:=':]'; getch; end;
     if (ch=':')and(ch2='[') then begin id.s_name:=':['; getch; end;
 
-    getch;
+    if not(end_of_file) then getch;
   end
     else
   begin
     id.s_name:=ch;
     id.kind:=nul;
-    getch;
+    if not(end_of_file) then getch;
   end;
   getsym:=id;
 end {getsym};
@@ -149,7 +153,7 @@ start_of_file:=true; end_of_file:=false;
 getch;
 repeat
     id:=getsym;
-    writeln('kind=',id.kind,' name=',id.s_name);
+    writeln('kind=',id.kind,' name= ',id.s_name);
 until id.s_name='.';
 
 end.
