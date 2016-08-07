@@ -16,7 +16,7 @@
 
 {Поиск многосимвольных идентификаторов, чисел,             }
 {односимвольных и двухсимвольных операций во входном потоке}
-program rbnf_parser(input, oufput);
+program rbnf_parser(input, output);
 
 type
 t_sym=record 
